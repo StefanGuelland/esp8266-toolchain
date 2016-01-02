@@ -1,0 +1,11 @@
+build:
+  image: ubuntu:latest
+  commands:
+    - ./install_dependencies.sh
+    - adduser builder; mkdir esp-open-sdk && chown builder esp-open-sdk
+    - su builder -c "git clone --recursive --depth=1 https://github.com/pfalcon/esp-open-sdk.git"
+    - su builder -c "echo "CT_STATIC_TOOLCHAIN=y" >> esp-open-sdk/crosstool-config-overrides"
+    - su builder -c "cd esp-open-sdk && make STANDALONE=n VENDOR_SDK=1.5.0"
+    - cd esp-open-sdk && tar -cvzf ../esp8266-toolchain.tgz xtensa-lx106-elf/ && cd ..
+    - cp esp-open-sdk/esp_iot_sdk_v1.5.0_15_11_27.zip .
+    - rm -r esp-open-sdk
